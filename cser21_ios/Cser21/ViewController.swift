@@ -691,23 +691,40 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
     
     
    private func downloadImagesFromNetwork(imageUrls: [String],completion: @escaping ([UIImage]) -> Void) {
-        var images: [UIImage] = []
-               var numberOfImagesDownloaded = 0
-               for url in imageUrls {
-                   guard let imageUrl = URL(string: url) else { return }
-                   URLSession.shared.dataTask(with: imageUrl) { data, response, error in
-                       if let data = data, let image = UIImage(data: data) {
-                           images.append(image)
-                           numberOfImagesDownloaded += 1
-                           if numberOfImagesDownloaded == imageUrls.count {
-                               // Tất cả các hình ảnh đã được tải xuống
-                               DispatchQueue.main.async {
-                                   completion(images)
-                               }
-                           }
-                       }
-                   }.resume()
-               }
+       var images: [UIImage] = []
+          let dispatchGroup = DispatchGroup()
+       
+          for url in imageUrls {
+              guard let imageUrl = URL(string: url) else { continue }
+              
+              dispatchGroup.enter() // Bắt đầu theo dõi tải xuống hình ảnh
+
+              URLSession.shared.dataTask(with: imageUrl) { data, response, error in
+                  defer {
+                      dispatchGroup.leave() // Kết thúc theo dõi khi hoàn thành việc tải xuống hình ảnh
+                  }
+
+                  // Xử lý lỗi
+                  if let error = error {
+                      print("Error downloading image: \(error)")
+                      return
+                  }
+
+                  // Kiểm tra dữ liệu hình ảnh
+                  guard let data = data, let image = UIImage(data: data) else {
+                      print("Invalid image data")
+                      return
+                  }
+                  images.append(image) // Thêm hình ảnh vào mảng
+              }.resume()
+          }
+
+          // Thực hiện closure khi tất cả các tác vụ trong DispatchGroup đã hoàn thành
+          dispatchGroup.notify(queue: .main) {
+              completion(images)
+          }
+              
+       
     }
     
     private func showLoading(text: String){
