@@ -116,16 +116,45 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - SHARE SOCIAL
     @objc func SHARE_SOCIAL(result: Result) -> Void {
         //
-        result.success = true;
-        result.data = "" //JSON(result.params)
+        result.success = false;
+        if let jsonData = result.params?.data(using: .utf8) {
+            do {
+                let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
+                if let jsonObject = json as? [String: Any] {
+                    
+                    let images = jsonObject["Images"] as? [String]
+                    DispatchQueue.main.asyncAfter(deadline:.now()) {
+                        self.caller.shareImages(images: images ?? [])
+                    }
+
+                   
+                }
+            } catch {
+                print("Error parsing JSON: \(error.localizedDescription)")
+            }
+        }        
         App21Result(result: result);
     }
     
     //MARK: - DOWNLOAD FILES
     @objc func DOWNLOAD_FILES(result: Result) -> Void {
         //
-        result.success = true;
-        result.data = "" //JSON(result.params)
+        result.success = false;
+       // result.data = "" //JSON(result.params)
+        print(result.params)
+        if let jsonData = result.params?.data(using: .utf8) {
+            do {
+                if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
+                           print(images)
+                    DispatchQueue.main.asyncAfter(deadline:.now()) {
+                        self.caller.saveImages(images: images)
+                        }
+                    }
+                
+            } catch {
+                print("Error parsing JSON: \(error.localizedDescription)")
+            }
+        }
         App21Result(result: result);
     }
     

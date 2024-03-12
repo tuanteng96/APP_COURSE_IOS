@@ -21,6 +21,8 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
     
     var qrCodeResult: Result = Result()
     
+    var isShowLoading = false
+    
     //MARK: - Location
     let locationManager = CLLocationManager()
     var locationCallback : ((CLLocationCoordinate2D?,  CLAuthorizationStatus?) -> Void)?
@@ -637,6 +639,93 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
         wv.evaluateJavaScript("app_response('\(cmd)','\(value)',true)",completionHandler: nil)
     }
     
+    
+    func shareImages(images: [String]) {
+        showLoading(text: "Please wait...")
+        downloadImagesFromNetwork(imageUrls: images) { uiImages in
+            self.hideLoading()
+            let activityViewController = UIActivityViewController(activityItems: uiImages, applicationActivities: nil)
+               activityViewController.popoverPresentationController?.sourceView = self.view
+            
+               self.present(activityViewController, animated: true, completion: nil)
+        }
+    }
+    
+    func saveImages(images: [String]){
+        showLoading(text: "Please wait...")
+        
+        downloadImagesFromNetwork(imageUrls: images) { uiImages in
+            self.hideLoading()
+            var numberOfImagesDownloaded = 0
+            for img in uiImages {
+                numberOfImagesDownloaded += 1
+                if numberOfImagesDownloaded == uiImages.count {
+                    UIImageWriteToSavedPhotosAlbum(img, self, #selector(
+                        self.saveImageCompleted(_:didFinishSavingWithError:contextInfo:)), nil)
+                }else{
+                    UIImageWriteToSavedPhotosAlbum(img, self, nil, nil)
+                }
+                
+            }
+        }
+        
+
+    }
+    
+    @objc func saveImageCompleted(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            let ac = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            present(ac, animated: true)
+        } else {
+            let ac = UIAlertController(title: "Successfully!", message: "Your images has been saved to your photos.", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            present(ac, animated: true)
+        }
+    }
+    
+    
+   private func downloadImagesFromNetwork(imageUrls: [String],completion: @escaping ([UIImage]) -> Void) {
+        var images: [UIImage] = []
+               var numberOfImagesDownloaded = 0
+               for url in imageUrls {
+                   guard let imageUrl = URL(string: url) else { return }
+                   URLSession.shared.dataTask(with: imageUrl) { data, response, error in
+                       if let data = data, let image = UIImage(data: data) {
+                           images.append(image)
+                           numberOfImagesDownloaded += 1
+                           if numberOfImagesDownloaded == imageUrls.count {
+                               // Tất cả các hình ảnh đã được tải xuống
+                               DispatchQueue.main.async {
+                                   completion(images)
+                               }
+                           }
+                       }
+                   }.resume()
+               }
+    }
+    
+    private func showLoading(text: String){
+        if(isShowLoading) {
+            return;
+        }
+        let alert = UIAlertController(title: nil, message: text, preferredStyle: .alert)
+        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.style = UIActivityIndicatorView.Style.gray
+        loadingIndicator.startAnimating();
+
+        alert.view.addSubview(loadingIndicator)
+        present(alert, animated: true, completion: nil)
+        isShowLoading = true;
+    }
+    
+    private func hideLoading(){
+        if(isShowLoading){
+            self.dismiss(animated: false, completion: nil)
+            isShowLoading = false;
+        }
+    }
     
     
     
