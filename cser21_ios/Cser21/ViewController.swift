@@ -649,9 +649,11 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
             for img in uiImages {
                 items.append(img)
             }
-            let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
-               activityViewController.popoverPresentationController?.sourceView = self.view
-            
+            let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: [])
+                activityViewController.popoverPresentationController?.sourceView = self.view
+            if #available(iOS 13.0, *) {
+                activityViewController.isModalInPresentation = true
+            }
                self.present(activityViewController, animated: true, completion: nil)
         }
     }
