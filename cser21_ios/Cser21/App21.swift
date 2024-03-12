@@ -117,14 +117,17 @@ class App21 : NSObject, CLLocationManagerDelegate
     @objc func SHARE_SOCIAL(result: Result) -> Void {
         //
         result.success = false;
+        print(result.params)
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
                 if let jsonObject = json as? [String: Any] {
                     
                     let images = jsonObject["Images"] as? [String]
+                    let text = jsonObject["Content"] as? String
+
                     DispatchQueue.main.asyncAfter(deadline:.now()) {
-                        self.caller.shareImages(images: images ?? [])
+                        self.caller.shareImages(images: images ?? [], text: text ?? "")
                     }
 
                    

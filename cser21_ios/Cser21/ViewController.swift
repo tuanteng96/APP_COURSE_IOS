@@ -640,11 +640,16 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
     }
     
     
-    func shareImages(images: [String]) {
+    func shareImages(images: [String], text: String) {
         showLoading(text: "Please wait...")
         downloadImagesFromNetwork(imageUrls: images) { uiImages in
             self.hideLoading()
-            let activityViewController = UIActivityViewController(activityItems: uiImages, applicationActivities: nil)
+            var items = []
+            items.append(text)
+            for img in uiImages {
+                items.append(img)
+            }
+            let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
                activityViewController.popoverPresentationController?.sourceView = self.view
             
                self.present(activityViewController, animated: true, completion: nil)
