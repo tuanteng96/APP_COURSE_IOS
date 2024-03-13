@@ -117,7 +117,6 @@ class App21 : NSObject, CLLocationManagerDelegate
     @objc func SHARE_SOCIAL(result: Result) -> Void {
         //
         result.success = false;
-        print(result.params)
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
@@ -127,30 +126,37 @@ class App21 : NSObject, CLLocationManagerDelegate
                     let text = jsonObject["Content"] as? String
 
                     DispatchQueue.main.asyncAfter(deadline:.now()) {
-                        self.caller.shareImages(images: images ?? [], text: text ?? "")
+                        self.caller.shareImages(images: images ?? [], text: text ?? "", completeShare: {
+                            result.success = true
+                            result.params = ""
+                            result.data = "Share thành công"
+                            self.App21Result(result: result);
+                        })
                     }
-
                    
                 }
             } catch {
                 print("Error parsing JSON: \(error.localizedDescription)")
             }
         }        
-        App21Result(result: result);
+       
     }
-    
+        
     //MARK: - DOWNLOAD FILES
     @objc func DOWNLOAD_FILES(result: Result) -> Void {
         //
         result.success = false;
-       // result.data = "" //JSON(result.params)
-        print(result.params)
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
                            print(images)
                     DispatchQueue.main.asyncAfter(deadline:.now()) {
-                        self.caller.saveImages(images: images)
+                        self.caller.saveImages(images: images, completeSave: {
+                            result.success = true
+                            result.params = ""
+                            result.data = "Lưu thành công"
+                            self.App21Result(result: result);
+                        })
                         }
                     }
                 
@@ -158,7 +164,7 @@ class App21 : NSObject, CLLocationManagerDelegate
                 print("Error parsing JSON: \(error.localizedDescription)")
             }
         }
-        App21Result(result: result);
+       
     }
     
     

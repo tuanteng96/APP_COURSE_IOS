@@ -640,7 +640,7 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
     }
     
     
-    func shareImages(images: [String], text: String) {
+    func shareImages(images: [String], text: String, completeShare:@escaping ()->Void) {
         showLoading(text: "Please wait...")
         downloadImagesFromNetwork(imageUrls: images) { uiImages in
             self.hideLoading(completion:  {
@@ -656,9 +656,7 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
                 }
                 activityViewController.completionWithItemsHandler = { (activityType: UIActivity.ActivityType?, completed: Bool, returnedItems: [Any]?, error: Error?) -> Void in
                     if completed == true {
-                        let ac = UIAlertController(title: "Successfully!", message: "You have successfully shared", preferredStyle: .alert)
-                        ac.addAction(UIAlertAction(title: "OK", style: .default))
-                        self.present(ac, animated: true)
+                        completeShare()
                     }
                 }
                    self.present(activityViewController, animated: true, completion: nil)
@@ -667,7 +665,7 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
         }
     }
     
-    func saveImages(images: [String]){
+    func saveImages(images: [String], completeSave: @escaping ()->Void){
         showLoading(text: "Please wait...")
         downloadImagesFromNetwork(imageUrls: images) { uiImages in
             self.hideLoading(completion: {
@@ -677,29 +675,31 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
                     if numberOfImagesDownloaded == uiImages.count {
                         UIImageWriteToSavedPhotosAlbum(img, self, #selector(
                             self.saveImageCompleted(_:didFinishSavingWithError:contextInfo:)), nil)
+                       completeSave()
                     }else{
                         UIImageWriteToSavedPhotosAlbum(img, self, nil, nil)
                     }
                     
                 }
-
             })
         }
         
-
     }
     
     @objc func saveImageCompleted(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-        if let error = error {
-            let ac = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-            ac.addAction(UIAlertAction(title: "OK", style: .default))
-            present(ac, animated: true)
-        } else {
-            let ac = UIAlertController(title: "Successfully!", message: "Your images has been saved to your photos.", preferredStyle: .alert)
-            ac.addAction(UIAlertAction(title: "OK", style: .default))
-            present(ac, animated: true)
+        
+//            if let error = error {
+//                let ac = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+//                ac.addAction(UIAlertAction(title: "OK", style: .default))
+//                present(ac, animated: true)
+//            } else {
+//                let ac = UIAlertController(title: "Successfully!", message: "Your images has been saved to your photos.", preferredStyle: .alert)
+//                ac.addAction(UIAlertAction(title: "OK", style: .default))
+//                present(ac, animated: true)
+//            }
         }
-    }
+    
+   
     
     
    private func downloadImagesFromNetwork(imageUrls: [String],completion: @escaping ([UIImage]) -> Void) {
