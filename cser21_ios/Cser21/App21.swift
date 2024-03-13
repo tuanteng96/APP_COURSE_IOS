@@ -145,18 +145,13 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - DOWNLOAD FILES
     @objc func DOWNLOAD_FILES(result: Result) -> Void {
         //
-        result.success = false;
+        
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
                            print(images)
                     DispatchQueue.main.asyncAfter(deadline:.now()) {
-                        self.caller.saveImages(images: images, completeSave: {
-                            result.success = true
-                            result.params = ""
-                            result.data = "Lưu thành công"
-                            self.App21Result(result: result);
-                        })
+                        self.caller.saveImages(images: images, result: result)
                         }
                     }
                 

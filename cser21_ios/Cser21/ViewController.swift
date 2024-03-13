@@ -23,6 +23,8 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
     
     var isShowLoading = false
     
+    var saveImageResult: Result = Result()
+    
     //MARK: - Location
     let locationManager = CLLocationManager()
     var locationCallback : ((CLLocationCoordinate2D?,  CLAuthorizationStatus?) -> Void)?
@@ -665,7 +667,8 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
         }
     }
     
-    func saveImages(images: [String], completeSave: @escaping ()->Void){
+    func saveImages(images: [String], result: Result){
+        saveImageResult = result
         showLoading(text: "Please wait...")
         downloadImagesFromNetwork(imageUrls: images) { uiImages in
             self.hideLoading(completion: {
@@ -675,7 +678,7 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
                     if numberOfImagesDownloaded == uiImages.count {
                         UIImageWriteToSavedPhotosAlbum(img, self, #selector(
                             self.saveImageCompleted(_:didFinishSavingWithError:contextInfo:)), nil)
-                       completeSave()
+                       
                     }else{
                         UIImageWriteToSavedPhotosAlbum(img, self, nil, nil)
                     }
@@ -687,16 +690,16 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
     }
     
     @objc func saveImageCompleted(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-        
-//            if let error = error {
-//                let ac = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-//                ac.addAction(UIAlertAction(title: "OK", style: .default))
-//                present(ac, animated: true)
-//            } else {
-//                let ac = UIAlertController(title: "Successfully!", message: "Your images has been saved to your photos.", preferredStyle: .alert)
-//                ac.addAction(UIAlertAction(title: "OK", style: .default))
-//                present(ac, animated: true)
-//            }
+                saveImageResult.params = ""
+            if let error = error {
+                saveImageResult.success = false
+                saveImageResult.data = "Save Image ERROR"
+                app21?.App21Result(result: saveImageResult)
+            } else {
+                saveImageResult.success = true
+                saveImageResult.data = "Save Image Successfully"
+                app21?.App21Result(result: saveImageResult)
+            }
         }
     
    
