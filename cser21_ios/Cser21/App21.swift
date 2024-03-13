@@ -113,6 +113,13 @@ class App21 : NSObject, CLLocationManagerDelegate
         }
     }
     
+    //MARK: - GET FILE LOCAL
+    @objc func GET_FILE_LOCAL(result: Result) -> Void {
+        result.success = true;
+        result.data = "/a/b.png";
+        App21Result(result: result);
+    }
+    
     //MARK: - SHARE SOCIAL
     @objc func SHARE_SOCIAL(result: Result) -> Void {
         //
