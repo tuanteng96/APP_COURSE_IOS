@@ -643,37 +643,40 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
     func shareImages(images: [String], text: String) {
         showLoading(text: "Please wait...")
         downloadImagesFromNetwork(imageUrls: images) { uiImages in
-            self.hideLoading()
-            var items = []
-            items.append(text)
-            for img in uiImages {
-                items.append(img)
-            }
-            let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: [])
-                activityViewController.popoverPresentationController?.sourceView = self.view
-            if #available(iOS 13.0, *) {
-                activityViewController.isModalInPresentation = true
-            }
-               self.present(activityViewController, animated: true, completion: nil)
+            self.hideLoading(completion:  {
+                var items = []
+                items.append(text)
+                for img in uiImages {
+                    items.append(img)
+                }
+                let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: [])
+                    activityViewController.popoverPresentationController?.sourceView = self.view
+                if #available(iOS 13.0, *) {
+                    activityViewController.isModalInPresentation = true
+                }
+                   self.present(activityViewController, animated: true, completion: nil)
+                
+            })
         }
     }
     
     func saveImages(images: [String]){
         showLoading(text: "Please wait...")
-        
         downloadImagesFromNetwork(imageUrls: images) { uiImages in
-            self.hideLoading()
-            var numberOfImagesDownloaded = 0
-            for img in uiImages {
-                numberOfImagesDownloaded += 1
-                if numberOfImagesDownloaded == uiImages.count {
-                    UIImageWriteToSavedPhotosAlbum(img, self, #selector(
-                        self.saveImageCompleted(_:didFinishSavingWithError:contextInfo:)), nil)
-                }else{
-                    UIImageWriteToSavedPhotosAlbum(img, self, nil, nil)
+            self.hideLoading(completion: {
+                var numberOfImagesDownloaded = 0
+                for img in uiImages {
+                    numberOfImagesDownloaded += 1
+                    if numberOfImagesDownloaded == uiImages.count {
+                        UIImageWriteToSavedPhotosAlbum(img, self, #selector(
+                            self.saveImageCompleted(_:didFinishSavingWithError:contextInfo:)), nil)
+                    }else{
+                        UIImageWriteToSavedPhotosAlbum(img, self, nil, nil)
+                    }
+                    
                 }
-                
-            }
+
+            })
         }
         
 
@@ -744,9 +747,12 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
         isShowLoading = true;
     }
     
-    private func hideLoading(){
+    private func hideLoading(completion: @escaping () -> Void){
         if(isShowLoading){
-            self.dismiss(animated: false, completion: nil)
+            self.dismiss(animated: false, completion:{
+                completion()
+                
+           } )
             isShowLoading = false;
         }
     }
