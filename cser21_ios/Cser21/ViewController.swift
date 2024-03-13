@@ -654,6 +654,13 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
                 if #available(iOS 13.0, *) {
                     activityViewController.isModalInPresentation = true
                 }
+                activityViewController.completionWithItemsHandler = { (activityType: UIActivity.ActivityType?, completed: Bool, returnedItems: [Any]?, error: Error?) -> Void in
+                    if completed == true {
+                        let ac = UIAlertController(title: "Successfully!", message: "You have successfully shared", preferredStyle: .alert)
+                        ac.addAction(UIAlertAction(title: "OK", style: .default))
+                        self.present(ac, animated: true)
+                    }
+                }
                    self.present(activityViewController, animated: true, completion: nil)
                 
             })
