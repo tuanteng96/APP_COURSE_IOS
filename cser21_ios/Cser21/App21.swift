@@ -120,6 +120,34 @@ class App21 : NSObject, CLLocationManagerDelegate
         App21Result(result: result);
     }
     
+    //MARK: - GET FILE PATH
+    @objc func GET_FILE_PATH(result: Result) -> Void {
+        result.success = true;
+        result.data = []; // Ở đây data return về 1 mảng ảnh mới nhé a
+        App21Result(result: result);
+    }
+    
+    //MARK: - SAVE IMAGE LOCAL
+    @objc func SAVE_IMAGES_LOCAL(result: Result) -> Void {
+        result.success = true;
+        result.data = "";
+        App21Result(result: result);
+    }
+    
+    //MARK: - SAVE JSON LOCAL
+    @objc func SAVE_JSON_LOCAL(result: Result) -> Void {
+        result.success = true;
+        result.data = "";
+        App21Result(result: result);
+    }
+    
+    //MARK: - DELETE FILES LOCAL
+    @objc func DELETE_FILES_LOCAL(result: Result) -> Void {
+        result.success = true;
+        result.data = "";
+        App21Result(result: result);
+    }
+    
     //MARK: - SHARE SOCIAL
     @objc func SHARE_SOCIAL(result: Result) -> Void {
         //

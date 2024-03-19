@@ -34,6 +34,7 @@
 		34B77791241B82EB00787FE3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B7778F241B82EB00787FE3 /* LaunchScreen.storyboard */; };
 		34B7779C241B82EB00787FE3 /* Cser21Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B7779B241B82EB00787FE3 /* Cser21Tests.swift */; };
 		34B777A7241B82EB00787FE3 /* Cser21UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B777A6241B82EB00787FE3 /* Cser21UITests.swift */; };
+		B727A0A52BA930D500F4F674 /* images in Resources */ = {isa = PBXBuildFile; fileRef = B727A0A42BA930D500F4F674 /* images */; };
 		B78D29502A9706E80017C1E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B78D294F2A9706E80017C1E4 /* GoogleService-Info.plist */; };
 		B7CC7AA52B57718700E268BD /* WiffiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7CC7AA42B57718700E268BD /* WiffiManager.swift */; };
 		EF94C6E9277D500E0015CCA5 /* QrCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF94C6E8277D500E0015CCA5 /* QrCodeController.swift */; };
@@ -121,6 +122,7 @@
 		9D27D813E3733BD426D5E409 /* Pods-ezsspa-ezsspaUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ezsspa-ezsspaUITests.debug.xcconfig"; path = "Target Support Files/Pods-ezsspa-ezsspaUITests/Pods-ezsspa-ezsspaUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		A50A63D593A3F7F1D6B4319A /* Pods-ezschamcong.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ezschamcong.debug.xcconfig"; path = "Target Support Files/Pods-ezschamcong/Pods-ezschamcong.debug.xcconfig"; sourceTree = "<group>"; };
 		B3DAC92D562CD5D441388F3D /* Pods-ezschamcongTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ezschamcongTests.release.xcconfig"; path = "Target Support Files/Pods-ezschamcongTests/Pods-ezschamcongTests.release.xcconfig"; sourceTree = "<group>"; };
+		B727A0A42BA930D500F4F674 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = ../../../../images; sourceTree = "<group>"; };
 		B78D294F2A9706E80017C1E4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B7CC7AA42B57718700E268BD /* WiffiManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WiffiManager.swift; sourceTree = "<group>"; };
 		BA2F3A18315F89ED22477C22 /* Pods-ezsspa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ezsspa.debug.xcconfig"; path = "Target Support Files/Pods-ezsspa/Pods-ezsspa.debug.xcconfig"; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 		34B77785241B82EA00787FE3 /* Cser21 */ = {
 			isa = PBXGroup;
 			children = (
+				B727A0A42BA930D500F4F674 /* images */,
 				B7CC7AA42B57718700E268BD /* WiffiManager.swift */,
 				B78D294F2A9706E80017C1E4 /* GoogleService-Info.plist */,
 				18D1BE3F24558950001B95F7 /* fonts */,
@@ -414,6 +417,7 @@
 				349088FA241B8A3D004AD9A0 /* embed.html in Resources */,
 				18D1BE4024558950001B95F7 /* fonts in Resources */,
 				183E4581244AEBD800E6AB75 /* embed21.html in Resources */,
+				B727A0A52BA930D500F4F674 /* images in Resources */,
 				34B7778E241B82EB00787FE3 /* Assets.xcassets in Resources */,
 				34B7778C241B82EA00787FE3 /* Main.storyboard in Resources */,
 				B78D29502A9706E80017C1E4 /* GoogleService-Info.plist in Resources */,
