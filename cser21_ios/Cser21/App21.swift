@@ -116,15 +116,32 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - GET FILE LOCAL
     @objc func GET_FILE_LOCAL(result: Result) -> Void {
         result.success = true;
-        result.data = "/a/b.png";
+//        result.data = JSON(self.caller.imgUrl);
         App21Result(result: result);
     }
     
     //MARK: - GET FILE PATH
     @objc func GET_FILE_PATH(result: Result) -> Void {
         result.success = true;
-        result.data = []; // Ở đây data return về 1 mảng ảnh mới nhé a
-        App21Result(result: result);
+        if let jsonData = result.params?.data(using: .utf8) {
+            do {
+                if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
+                           print(images)
+                    var list = [String]()
+                    for img in images {
+                        let l =  self.caller.getFileFromBundle(path: img)
+                        list.append(l ?? "")
+                    }
+                    result.data = JSON(list);
+                    // Ở đây data return về 1 mảng ảnh mới nhé a
+                   App21Result(result: result);
+
+                    }
+                
+            } catch {
+                print("Error parsing JSON: \(error.localizedDescription)")
+            }
+        }
     }
     
     //MARK: - SAVE IMAGE LOCAL

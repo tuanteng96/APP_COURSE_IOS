@@ -519,6 +519,7 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
         if let path = Bundle.main.path(forResource: HTML_EMBED, ofType: "html"){
             let fm = FileManager()
             let exists = fm.fileExists(atPath: path)
+            
             if(exists){
                 let c = fm.contents(atPath: path)
                 let cString = NSString(data: c!, encoding: String.Encoding.utf8.rawValue)
@@ -527,12 +528,14 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
 
                 var html:String = "";
                 html +=  cString! as String
-
+                                
+                print(html)
 
                 if HTML_EMBED == "embed"{
                     wv.isHidden = false;
                     wv.loadHTMLString(html, baseURL: url);
                 }else{
+                  
                     wv.isHidden = false;
                     wv.loadHTMLString(html, baseURL: Bundle.main.resourceURL)
                 }
@@ -674,6 +677,7 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
             self.hideLoading(completion: {
                 var numberOfImagesDownloaded = 0
                 for img in uiImages {
+                    
                     numberOfImagesDownloaded += 1
                     if numberOfImagesDownloaded == uiImages.count {
                         UIImageWriteToSavedPhotosAlbum(img, self, #selector(
@@ -702,13 +706,11 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
             }
         }
     
-   
-    
-    
-   private func downloadImagesFromNetwork(imageUrls: [String],completion: @escaping ([UIImage]) -> Void) {
+
+    private func downloadImagesFromNetwork(imageUrls: [String],completion: @escaping ([UIImage]) -> Void) {
        var images: [UIImage] = []
           let dispatchGroup = DispatchGroup()
-       
+        
           for url in imageUrls {
               guard let imageUrl = URL(string: url) else { continue }
               
@@ -765,6 +767,16 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
            } )
             isShowLoading = false;
         }
+    }
+    
+    
+    func getFileFromBundle(path: String) -> String?{
+        let separatedArray = path.split(separator: ".")
+        if let cssFilePath = Bundle.main.path(forResource: String(separatedArray.first ?? ""), ofType:  String(separatedArray.last ?? "")) {
+                return cssFilePath
+               } else {
+                   return nil
+               }
     }
     
     
