@@ -113,15 +113,16 @@ class App21 : NSObject, CLLocationManagerDelegate
         }
     }
     
-    //MARK: - GET FILE LOCAL
-    @objc func GET_FILE_LOCAL(result: Result) -> Void {
+    //MARK: - GET FILES LOCAL
+    @objc func GET_FILES_LOCAL(result: Result) -> Void {
+        // params sẽ là 1 mảng các tên file ở local nhé a
         result.success = true;
 //        result.data = JSON(self.caller.imgUrl);
         App21Result(result: result);
     }
     
-    //MARK: - GET FILE PATH
-    @objc func GET_FILE_PATH(result: Result) -> Void {
+    //MARK: - GET FILES PATH
+    @objc func GET_FILES_PATH(result: Result) -> Void {
         result.success = true;
         if let jsonData = result.params?.data(using: .utf8) {
             do {
@@ -133,7 +134,6 @@ class App21 : NSObject, CLLocationManagerDelegate
                         list.append(l ?? "")
                     }
                     result.data = JSON(list);
-                    // Ở đây data return về 1 mảng ảnh mới nhé a
                    App21Result(result: result);
 
                     }
@@ -144,23 +144,33 @@ class App21 : NSObject, CLLocationManagerDelegate
         }
     }
     
-    //MARK: - SAVE IMAGE LOCAL
-    @objc func SAVE_IMAGES_LOCAL(result: Result) -> Void {
+    //MARK: - DOWNLOAD ZIP SERVER LOCAL
+    @objc func DOWNLOAD_ZIP_SERVER(result: Result) -> Void {
+        result.success = true;
+        // params sẽ là 1 mảng các file zip từ server cần download và giải nén
+        result.data = "";
+        App21Result(result: result);
+    }
+    
+    //MARK: - GET JSON LOCAL
+    @objc func GET_JSON_LOCAL(result: Result) -> Void {
+        result.success = true;
+        // params sẽ là 1 mảng các đường dẫn file json
+        result.data = "";
+        App21Result(result: result);
+    }
+    
+    //MARK: - DELETE ALL FILE LOCAL
+    @objc func DELETE_ALL_LOCAL(result: Result) -> Void {
         result.success = true;
         result.data = "";
         App21Result(result: result);
     }
     
-    //MARK: - SAVE JSON LOCAL
-    @objc func SAVE_JSON_LOCAL(result: Result) -> Void {
+    //MARK: - DELETE ALL FILE LOCAL
+    @objc func SAVE_FILES_LOCAL(result: Result) -> Void {
         result.success = true;
-        result.data = "";
-        App21Result(result: result);
-    }
-    
-    //MARK: - DELETE FILES LOCAL
-    @objc func DELETE_FILES_LOCAL(result: Result) -> Void {
-        result.success = true;
+        // params sẽ là 1 mảng các đường dẫn file cần lưu
         result.data = "";
         App21Result(result: result);
     }

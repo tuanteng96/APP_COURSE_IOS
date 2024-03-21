@@ -519,7 +519,7 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
         if let path = Bundle.main.path(forResource: HTML_EMBED, ofType: "html"){
             let fm = FileManager()
             let exists = fm.fileExists(atPath: path)
-            
+
             if(exists){
                 let c = fm.contents(atPath: path)
                 let cString = NSString(data: c!, encoding: String.Encoding.utf8.rawValue)
@@ -528,14 +528,14 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
 
                 var html:String = "";
                 html +=  cString! as String
-                                
+
                 print(html)
 
                 if HTML_EMBED == "embed"{
                     wv.isHidden = false;
                     wv.loadHTMLString(html, baseURL: url);
                 }else{
-                  
+
                     wv.isHidden = false;
                     wv.loadHTMLString(html, baseURL: Bundle.main.resourceURL)
                 }
