@@ -116,9 +116,23 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - GET FILES LOCAL
     @objc func GET_FILES_LOCAL(result: Result) -> Void {
         // params sẽ là 1 mảng các tên file ở local nhé a
-        result.success = true;
-//        result.data = JSON(self.caller.imgUrl);
-        App21Result(result: result);
+        if let jsonData = result.params?.data(using: .utf8) {
+            do {
+                if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
+                    let dataCacheManager = DataCacheManager()
+                    let list = dataCacheManager.getFileFromUnZipedFolder(images: images)
+                    result.success = true;
+                    result.data = JSON(list);
+                    App21Result(result: result);
+                }
+                
+            } catch {
+                print("Error parsing JSON: \(error.localizedDescription)")
+                result.success = false;
+                result.data = "Error";
+                App21Result(result: result);
+            }
+        }
     }
     
     //MARK: - GET FILES PATH
@@ -149,21 +163,37 @@ class App21 : NSObject, CLLocationManagerDelegate
         result.success = true;
         // params sẽ là 1 mảng các file zip từ server cần download và giải nén
         result.data = "";
+        print(result.params)
         App21Result(result: result);
     }
     
     //MARK: - GET JSON LOCAL
     @objc func GET_JSON_LOCAL(result: Result) -> Void {
         result.success = true;
-        // params sẽ là 1 mảng các đường dẫn file json
-        result.data = "";
-        App21Result(result: result);
+        if let jsonData = result.params?.data(using: .utf8) {
+            do {
+                if let jsons = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
+                    let dataCacheManager = DataCacheManager()
+                    let list = dataCacheManager.readDataJSONFromUnZippedFolder(paths: jsons)
+                    result.success = true;
+                    result.data = JSON(list);
+                    App21Result(result: result);
+                }
+                
+            } catch {
+                print("Error parsing JSON: \(error.localizedDescription)")
+                result.success = false;
+                result.data = "Error";
+                App21Result(result: result);
+            }
+        }
     }
     
     //MARK: - DELETE ALL FILE LOCAL
     @objc func DELETE_ALL_LOCAL(result: Result) -> Void {
         result.success = true;
         result.data = "";
+        print(result.params)
         App21Result(result: result);
     }
     
@@ -172,6 +202,7 @@ class App21 : NSObject, CLLocationManagerDelegate
         result.success = true;
         // params sẽ là 1 mảng các đường dẫn file cần lưu
         result.data = "";
+        print(result.params)
         App21Result(result: result);
     }
     
@@ -180,7 +211,19 @@ class App21 : NSObject, CLLocationManagerDelegate
         result.success = true;
         // params sẽ là đường dẫn file zip cần giải nén
         result.data = "";
-        App21Result(result: result);
+        if let fileName = result.params {
+            let dataCacheManager = DataCacheManager()
+            dataCacheManager.unZipFileFromAsset(fileName: fileName.replacingOccurrences(of: "\"", with: "")) {s in
+                result.success = true;
+                result.data = "Giải nén thành công"
+                self.App21Result(result: result);
+            } error: { url in
+                result.success = false;
+                result.data = "Lỗi giải nén"
+                self.App21Result(result: result);
+            }
+        }
+      
     }
     
     //MARK: - SHARE SOCIAL
