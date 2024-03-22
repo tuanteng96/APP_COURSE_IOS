@@ -175,6 +175,14 @@ class App21 : NSObject, CLLocationManagerDelegate
         App21Result(result: result);
     }
     
+    //MARK: - DELETE ALL FILE LOCAL
+    @objc func INIT_UNZIP_LOCAL(result: Result) -> Void {
+        result.success = true;
+        // params sẽ là đường dẫn file zip cần giải nén
+        result.data = "";
+        App21Result(result: result);
+    }
+    
     //MARK: - SHARE SOCIAL
     @objc func SHARE_SOCIAL(result: Result) -> Void {
         //
