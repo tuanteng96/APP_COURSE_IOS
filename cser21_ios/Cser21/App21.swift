@@ -167,7 +167,7 @@ class App21 : NSObject, CLLocationManagerDelegate
         App21Result(result: result);
     }
     
-    //MARK: - DELETE ALL FILE LOCAL
+    //MARK: - SAVE FILES LOCAL
     @objc func SAVE_FILES_LOCAL(result: Result) -> Void {
         result.success = true;
         // params sẽ là 1 mảng các đường dẫn file cần lưu
@@ -175,7 +175,7 @@ class App21 : NSObject, CLLocationManagerDelegate
         App21Result(result: result);
     }
     
-    //MARK: - DELETE ALL FILE LOCAL
+    //MARK: - UNZIP FILE LOCAL
     @objc func INIT_UNZIP_LOCAL(result: Result) -> Void {
         result.success = true;
         // params sẽ là đường dẫn file zip cần giải nén
