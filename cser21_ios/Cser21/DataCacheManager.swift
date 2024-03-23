@@ -54,7 +54,7 @@ class DataCacheManager {
     
     private func dataFromFile(fileURL : URL) -> String?{
         do {
-            let jsonString = try String(contentsOf: fileURL)
+            let jsonString = try String(contentsOf: fileURL,encoding: .utf8)
             return jsonString
         } catch {
             print("Lỗi khi đọc tệp tin: \(error)")
