@@ -14,7 +14,7 @@ class DataCacheManager {
         guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             return nil
         }
-        return documentsURL
+        return documentsURL.appendingPathComponent("cache")
     }
     
     private func getURLFromBundle(path: String) -> URL?{
@@ -124,6 +124,89 @@ class DataCacheManager {
             e()
         }
         
+    }
+    
+    func downLoadAndUnzipFile(files: [String], errorDownloadCallback: @escaping (String?) -> Void, errorUnZipCallback: @escaping (String?) -> Void, success:  @escaping () -> Void){
+        self.deleteAll()
+        downloadListFile(files: files) { localUrls in
+            print("listurrl : \(localUrls.count)")
+            if(localUrls.isEmpty){
+                errorDownloadCallback(nil)
+                return
+            }
+            
+            var i = 0;
+            for url in localUrls {
+                if url != nil {
+                    self.unZipFile(zipURL: url!) {
+                        i+=1
+                    } e: {
+                        errorUnZipCallback(url?.path)
+                    }
+                }
+            }
+            if(i == localUrls.count){
+                success()
+            }
+        } errorCallback: { url in
+            errorDownloadCallback(url)
+        }
+        
+    }
+    
+    private func downloadListFile(files : [String], completion : @escaping ([URL?]) -> Void, errorCallback : @escaping (String?) -> Void ) {
+        let dispatchGroup = DispatchGroup()
+        var listURL = [URL?]()
+        print("OOOO")
+        for file in files {
+            print(file)
+            guard let fileUrl = URL(string: file) else {
+                print("??")
+                continue }
+            
+            dispatchGroup.enter()
+            let task = URLSession.shared.downloadTask(with: fileUrl) { localURL, response, error in
+                defer {
+                    dispatchGroup.leave() // Kết thúc theo dõi khi hoàn thành việc tải xuống
+                }
+
+                if let error = error {
+                    //                        completion(nil, error)
+                    print("Error \(error)")
+                    errorCallback(file)
+                    return
+                }
+                if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+                    let statusCodeError = NSError(domain:"", code:httpResponse.statusCode, userInfo:nil)
+                    print("Error \(statusCodeError)")
+                    errorCallback(file)
+                    return
+                }
+                listURL.append(localURL)
+            }
+            task.resume()
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            completion(listURL)
+        }
+        
+    }
+    
+    func deleteAll(){
+        guard let documentsURL = getDocumentUrl() else {
+            return
+        }
+        deleteCache(path: documentsURL)
+    }
+    
+    private  func deleteCache(path: URL) {
+        do {
+            try  FileManager.default.removeItem(at: path)
+        }
+        catch {
+            print("Delete Error")
+        }
     }
     
 }

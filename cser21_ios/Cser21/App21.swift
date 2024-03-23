@@ -160,11 +160,33 @@ class App21 : NSObject, CLLocationManagerDelegate
     
     //MARK: - DOWNLOAD ZIP SERVER LOCAL
     @objc func DOWNLOAD_ZIP_SERVER(result: Result) -> Void {
-        result.success = true;
-        // params sẽ là 1 mảng các file zip từ server cần download và giải nén
-        result.data = "";
-        print(result.params)
-        App21Result(result: result);
+                print(result.params)
+        if let jsonData = result.params?.data(using: .utf8) {
+            do {
+                if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
+                           print(images)
+                    let dataCacheManager = DataCacheManager()
+                    dataCacheManager.downLoadAndUnzipFile(files: images) { url in
+                        result.success = false;
+                        result.data = "lỗi Download";
+                        self.App21Result(result: result);
+                    } errorUnZipCallback: { url in
+                        result.success = false;
+                        result.data = "lỗi Unzip";
+                        self.App21Result(result: result);
+                    } success: {
+                        result.success = true;
+                        result.data = "Download và giải nén thành công";
+                        self.App21Result(result: result);
+
+                    }
+
+                }
+                
+            } catch {
+                print("Error parsing JSON: \(error.localizedDescription)")
+            }
+        }
     }
     
     //MARK: - GET JSON LOCAL
@@ -193,7 +215,8 @@ class App21 : NSObject, CLLocationManagerDelegate
     @objc func DELETE_ALL_LOCAL(result: Result) -> Void {
         result.success = true;
         result.data = "";
-        print(result.params)
+        let dataCacheManager = DataCacheManager()
+        dataCacheManager.deleteAll()
         App21Result(result: result);
     }
     
