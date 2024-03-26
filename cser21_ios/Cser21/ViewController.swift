@@ -438,6 +438,8 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
         webConfiguration.setURLSchemeHandler(LocalSchemeHandler(), forURLScheme: "js")
         webConfiguration.setURLSchemeHandler(LocalSchemeHandler(), forURLScheme: "app21")
         //
+//        webConfiguration.setValue(true, forKey: "allowFileAccess")
+
         
         wv = WKWebView(frame: frm, configuration: webConfiguration);
         wv.navigationDelegate = self
@@ -496,6 +498,23 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
         evt_Longpress.delegate = self
         wv.addGestureRecognizer(evt_Longpress)
        
+        guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+        
+        let path = documentsURL.appendingPathComponent("\(HTML_EMBED).html")
+        let fm = FileManager()
+       
+        if let assetURL = Bundle.main.url(forResource: HTML_EMBED, withExtension: "html") {
+                do {
+                    try fm.copyItem(at: assetURL, to: path)
+                    print("File copied successfully to Documents directory.")
+                } catch {
+                    print("Error copying file: \(error.localizedDescription)")
+                }
+            } else {
+                print("File not found in the app bundle.")
+            }
         
         //UI
         
@@ -510,38 +529,16 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
 //
 //        let link = URL(string:"http://192.168.1.139:5173/")!
 //        let request = URLRequest(url: link)
+//        wv.loadFileURL(path, allowingReadAccessTo: documentsURL)
 //        wv.load(request);
 //        view.addSubview(wv);
         // DEV OPEN
         
         // load embed.html
         // DEV HIDDEN
-        if let path = Bundle.main.path(forResource: HTML_EMBED, ofType: "html"){
-            let fm = FileManager()
-            let exists = fm.fileExists(atPath: path)
-
-            if(exists){
-                let c = fm.contents(atPath: path)
-                let cString = NSString(data: c!, encoding: String.Encoding.utf8.rawValue)
-
-                let url = URL(string: domain)
-
-                var html:String = "";
-                html +=  cString! as String
-
-                print(html)
-
-                if HTML_EMBED == "embed"{
-                    wv.isHidden = false;
-                    wv.loadHTMLString(html, baseURL: url);
-                }else{
-
-                    wv.isHidden = false;
-                    wv.loadHTMLString(html, baseURL: Bundle.main.resourceURL)
-                }
-                wv.alpha = 1
-            }
-        }
+        wv.isHidden = false;
+        wv.loadFileURL(path, allowingReadAccessTo: documentsURL)
+        wv.alpha = 1
         // DEV HIDDEN
                 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification , object:nil)

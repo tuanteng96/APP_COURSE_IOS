@@ -80,7 +80,7 @@ class DataCacheManager {
         
         for img in images {
             if checkExist(fileName: img) {
-                list.append("file://\(documentsURL.appendingPathComponent(img).path)")
+                list.append("\(documentsURL.appendingPathComponent(img).path)")
             }else{
                 list.append(nil)
             }
