@@ -78,11 +78,13 @@ PODS:
   - nanopb/encode (1.30906.0)
   - PromisesObjC (1.2.12)
   - Protobuf (3.19.1)
+  - ZIPFoundation (0.9.11)
 
 DEPENDENCIES:
   - Alamofire
   - Firebase/Core
   - Firebase/Messaging
+  - ZIPFoundation (~> 0.9)
 
 SPEC REPOS:
   trunk:
@@ -100,6 +102,7 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - Protobuf
+    - ZIPFoundation
 
 SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
@@ -116,7 +119,8 @@ SPEC CHECKSUMS:
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: 3724efa50cb2846d7ccebc8691c574e85fd74471
+  ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
 
-PODFILE CHECKSUM: cbbf433edfb37333304fa7fc9ddc02150385a68c
+PODFILE CHECKSUM: aebcb8a1712da08c0cc9f400c158f207c0a34863
 
 COCOAPODS: 1.11.2
