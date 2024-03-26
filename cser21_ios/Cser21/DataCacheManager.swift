@@ -8,6 +8,8 @@
 
 import Foundation
 import ZIPFoundation
+import Alamofire
+
 class DataCacheManager {
     
     private func getDocumentUrl () -> URL?{
@@ -16,6 +18,14 @@ class DataCacheManager {
         }
         return documentsURL.appendingPathComponent("cache")
     }
+    
+    private func getDocUrl () -> URL?{
+        guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+        return documentsURL
+    }
+
     
     private func getURLFromBundle(path: String) -> URL?{
         let separatedArray = path.split(separator: ".")
@@ -155,7 +165,6 @@ class DataCacheManager {
     }
     
     private func downloadListFile(files : [String], completion : @escaping ([URL?]) -> Void, errorCallback : @escaping (String?) -> Void ) {
-        let dispatchGroup = DispatchGroup()
         var listURL = [URL?]()
         print("OOOO")
         for file in files {
@@ -163,34 +172,49 @@ class DataCacheManager {
             guard let fileUrl = URL(string: file) else {
                 print("??")
                 continue }
-            
-            dispatchGroup.enter()
-            let task = URLSession.shared.downloadTask(with: fileUrl) { localURL, response, error in
-                defer {
-                    dispatchGroup.leave() // Kết thúc theo dõi khi hoàn thành việc tải xuống
-                }
-
-                if let error = error {
-                    //                        completion(nil, error)
-                    print("Error \(error)")
-                    errorCallback(file)
-                    return
-                }
-                if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
-                    let statusCodeError = NSError(domain:"", code:httpResponse.statusCode, userInfo:nil)
-                    print("Error \(statusCodeError)")
-                    errorCallback(file)
-                    return
-                }
-                listURL.append(localURL)
+            guard var documentsURL = getDocUrl() else {
+                continue
             }
-            task.resume()
+            
+            let manager = Alamofire.SessionManager.default
+            
+            let destination: DownloadRequest.DownloadFileDestination = { _, _ in
+                var fn = file.split(separator: "?").first
+                fn = fn?.split(separator: "/").last
+                
+                documentsURL.appendPathComponent(String(fn!))
+                
+                
+                return (documentsURL, [.removePreviousFile])
+            }
+           
+            
+            manager.download(fileUrl, to: destination)
+            
+                .downloadProgress(queue: .main, closure: { (progress) in
+                    //progress closure
+                    print(progress.fractionCompleted)
+                })
+                .validate { request, response, temporaryURL, destinationURL in
+                    // Custom evaluation closure now includes file URLs (allows you to parse out error messages if necessary)
+                    //GlobalData.sharedInstance.dismissLoader()
+                    return .success
+                }
+            
+                .responseData { response in
+                    if let destinationUrl = response.destinationURL {
+                        print(destinationUrl)
+                        listURL.removeAll(keepingCapacity: false)
+                        let local = response.destinationURL!.absoluteString;
+                        listURL.append(destinationUrl)
+                        completion(listURL)
+                        
+                    } else {
+                        errorCallback(file)
+                    }
+                    
+                }
         }
-        
-        dispatchGroup.notify(queue: .main) {
-            completion(listURL)
-        }
-        
     }
     
     func deleteAll(){
