@@ -80,7 +80,7 @@ class DataCacheManager {
         
         for img in images {
             if checkExist(fileName: img) {
-                list.append(documentsURL.appendingPathComponent(img).path)
+                list.append("file://\(documentsURL.appendingPathComponent(img).path)")
             }else{
                 list.append(nil)
             }
@@ -205,7 +205,6 @@ class DataCacheManager {
                     if let destinationUrl = response.destinationURL {
                         print(destinationUrl)
                         listURL.removeAll(keepingCapacity: false)
-                        let local = response.destinationURL!.absoluteString;
                         listURL.append(destinationUrl)
                         completion(listURL)
                         
