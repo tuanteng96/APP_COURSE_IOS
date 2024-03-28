@@ -31,18 +31,18 @@ class App21 : NSObject, CLLocationManagerDelegate
         }
         return nil
     }
-
+    
     //MARK: - App21Result
     func App21Result(result: Result) -> Void {
         do {
-           let jsonEncoder = JSONEncoder()
-           let jsonData = try jsonEncoder.encode(result)
-           let json = String(data: jsonData, encoding: String.Encoding.utf8)
-           //chuyen ve base64 -> khong bi loi ky tu dac biet
-           let base64 = json?.base64Encoded();
-           DispatchQueue.main.async(execute: {
-               self.caller.evalJs(str: "App21Result('BASE64:" + base64! + "')");
-           })
+            let jsonEncoder = JSONEncoder()
+            let jsonData = try jsonEncoder.encode(result)
+            let json = String(data: jsonData, encoding: String.Encoding.utf8)
+            //chuyen ve base64 -> khong bi loi ky tu dac biet
+            let base64 = json?.base64Encoded();
+            DispatchQueue.main.async(execute: {
+                self.caller.evalJs(str: "App21Result('BASE64:" + base64! + "')");
+            })
         } catch  {
             //
             NSLog("App21Result -> " + error.localizedDescription);
@@ -55,7 +55,7 @@ class App21 : NSObject, CLLocationManagerDelegate
         //
         
         let result = Result();
-       
+        
         
         do {
             let data = jsonStr.data(using: .utf8);
@@ -78,8 +78,8 @@ class App21 : NSObject, CLLocationManagerDelegate
                 return;
             }
             performSelector(inBackground: selector, with: result)
-           
-           // App21Result(result: result);
+            
+            // App21Result(result: result);
             return;
         }
         catch let e as NSException{
@@ -116,6 +116,7 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - GET FILES LOCAL
     @objc func GET_FILES_LOCAL(result: Result) -> Void {
         // params sẽ là 1 mảng các tên file ở local nhé a
+        print(result.params)
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
@@ -141,16 +142,16 @@ class App21 : NSObject, CLLocationManagerDelegate
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
-                           print(images)
+                    print(images)
                     var list = [String]()
                     for img in images {
                         let l =  self.caller.getFileFromBundle(path: img)
                         list.append(l ?? "")
                     }
                     result.data = JSON(list);
-                   App21Result(result: result);
-
-                    }
+                    App21Result(result: result);
+                    
+                }
                 
             } catch {
                 print("Error parsing JSON: \(error.localizedDescription)")
@@ -160,11 +161,11 @@ class App21 : NSObject, CLLocationManagerDelegate
     
     //MARK: - DOWNLOAD ZIP SERVER LOCAL
     @objc func DOWNLOAD_ZIP_SERVER(result: Result) -> Void {
-                print(result.params)
+        print(result.params)
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
-                           print(images)
+                    print(images)
                     let dataCacheManager = DataCacheManager()
                     dataCacheManager.downLoadAndUnzipFile(files: images) { url in
                         result.success = false;
@@ -178,9 +179,9 @@ class App21 : NSObject, CLLocationManagerDelegate
                         result.success = true;
                         result.data = "Download và giải nén thành công";
                         self.App21Result(result: result);
-
+                        
                     }
-
+                    
                 }
                 
             } catch {
@@ -192,13 +193,30 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - GET JSON LOCAL
     @objc func GET_JSON_LOCAL(result: Result) -> Void {
         result.success = true;
+        print(result.params)
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let jsons = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
                     let dataCacheManager = DataCacheManager()
                     let list = dataCacheManager.readDataJSONFromUnZippedFolder(paths: jsons)
                     result.success = true;
-                    result.data = JSON(list);
+                    
+                    var dicts = [[String: Any]]()
+                    for a in list {
+                        
+                        guard let jsonData = a?.data(using: .utf8) else {
+                            continue
+                        }
+                        do {
+                            // Parse JSON into an array of dictionaries
+                            if let json = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                                dicts.append(json)
+                            }
+                        } catch {
+                            print("Error parsing JSON: \(error.localizedDescription)")
+                        }
+                    }
+                    result.data = JSON(dicts);
                     App21Result(result: result);
                 }
                 
@@ -246,7 +264,7 @@ class App21 : NSObject, CLLocationManagerDelegate
                 self.App21Result(result: result);
             }
         }
-      
+        
     }
     
     //MARK: - SHARE SOCIAL
@@ -260,7 +278,7 @@ class App21 : NSObject, CLLocationManagerDelegate
                     
                     let images = jsonObject["Images"] as? [String]
                     let text = jsonObject["Content"] as? String
-
+                    
                     DispatchQueue.main.asyncAfter(deadline:.now()) {
                         self.caller.shareImages(images: images ?? [], text: text ?? "", completeShare: {
                             result.success = true
@@ -269,15 +287,15 @@ class App21 : NSObject, CLLocationManagerDelegate
                             self.App21Result(result: result);
                         })
                     }
-                   
+                    
                 }
             } catch {
                 print("Error parsing JSON: \(error.localizedDescription)")
             }
-        }        
-       
-    }
+        }
         
+    }
+    
     //MARK: - DOWNLOAD FILES
     @objc func DOWNLOAD_FILES(result: Result) -> Void {
         //
@@ -285,17 +303,17 @@ class App21 : NSObject, CLLocationManagerDelegate
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
-                           print(images)
+                    print(images)
                     DispatchQueue.main.asyncAfter(deadline:.now()) {
                         self.caller.saveImages(images: images, result: result)
-                        }
                     }
+                }
                 
             } catch {
                 print("Error parsing JSON: \(error.localizedDescription)")
             }
         }
-       
+        
     }
     
     
@@ -377,7 +395,7 @@ class App21 : NSObject, CLLocationManagerDelegate
                     //let strBase64 = imageData.base64EncodedString(options: .lineLength64Characters)
                     result.success = true
                     
-
+                    
                     
                     let src = DownloadFileTask().saveURL(url: video as URL, suffix: "RECORD_VIDEO.mp4");
                     result.data = JSON(src);
@@ -394,11 +412,11 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - LOCATION
     @objc func LOCATION(result: Result) -> Void {
         /*
-        result.success = true;
-        let loc21 = Loction21()
-        loc21.app21 = self
-        loc21.run(result: result)
-        */
+         result.success = true;
+         let loc21 = Loction21()
+         loc21.app21 = self
+         loc21.run(result: result)
+         */
         caller.locationCallback = {(loc: CLLocationCoordinate2D?, status: CLAuthorizationStatus? ) in
             result.success = loc != nil
             if(loc != nil)
@@ -419,9 +437,9 @@ class App21 : NSObject, CLLocationManagerDelegate
     @objc func DOWNLOAD(result: Result) -> Void
     {
         DownloadFileTask().load(src: result.params!, success: { (absPath: String) -> Void in
-//
+            //
             result.success = true;
-
+            
             //result.data = JSON(absPath);
             result.data = JSON(DownloadFileTask.toLocalSchemeUrl(absPath));
             self.App21Result(result: result)
@@ -459,15 +477,15 @@ class App21 : NSObject, CLLocationManagerDelegate
                 result.error = error.localizedDescription
                 // Bounce back to the main thread to update the UI
                 DispatchQueue.main.async {
-                     self.App21Result(result: result)
+                    self.App21Result(result: result)
                 }
             }
         }
         
-       
+        
         
     }
-        
+    
     
     
     
@@ -485,7 +503,7 @@ class App21 : NSObject, CLLocationManagerDelegate
             
             self.App21Result(result: result);
         })
-       
+        
     }
     
     @objc func GET_NETWORK_TYPE (result: Result) -> Void
@@ -495,7 +513,7 @@ class App21 : NSObject, CLLocationManagerDelegate
             {
                 var wifiInfo = WiFiManager.getWiFiInfo()
                 result.data = JSON(wifiInfo)
-               
+                
                 if  wifiInfo.isEmpty {
                     result.data = "NO WIFI"
                     result.success = true
@@ -505,7 +523,7 @@ class App21 : NSObject, CLLocationManagerDelegate
                     print("RESULT WIFI: \(String(describing: result.data))")
                 }
                 self.App21Result(result: result);
-            
+                
             } else {
                 if(status == .restricted || status == .denied){
                     result.success = true
@@ -513,13 +531,13 @@ class App21 : NSObject, CLLocationManagerDelegate
                     self.App21Result(result: result);
                 }
             }
-           
+            
         }
         caller.requestLoction()
     }
     
     
-
+    
     //MARK: - GET_DOWNLOADED
     @objc func GET_DOWNLOADED(result: Result) -> Void
     {
@@ -609,7 +627,7 @@ class App21 : NSObject, CLLocationManagerDelegate
                 
                 break
             case .restricted:
-               
+                
                 self.reject(result: result, resson: "permission_restricted")
                 
                 break
@@ -620,46 +638,46 @@ class App21 : NSObject, CLLocationManagerDelegate
     }
     
     //MARK: - SET_BADGE
-        @objc func SET_BADGE(result: Result) -> Void
-        {
-            DispatchQueue.main.async {
-                UIApplication.shared.applicationIconBadgeNumber -= 1
-            }
-            
+    @objc func SET_BADGE(result: Result) -> Void
+    {
+        DispatchQueue.main.async {
+            UIApplication.shared.applicationIconBadgeNumber -= 1
         }
+        
+    }
     
     //MARK: - REMOVE_BADGE
     @objc func REMOVE_BADGE(result: Result) -> Void
     {
         DispatchQueue.main.async {
-                UIApplication.shared.applicationIconBadgeNumber = 0
+            UIApplication.shared.applicationIconBadgeNumber = 0
         }
     }
     
     //MARK: - GET_LOCATION
-        @objc func GET_LOCATION(result: Result) -> Void
-        {
-            caller.locationCallback = {(loc: CLLocationCoordinate2D?, status: CLAuthorizationStatus? ) in
-                if(loc != nil)
-                {
-                    let d: [String: Double] = [
-                        "latitude": loc!.latitude,
-                        "longitude": loc!.longitude
-                    ]
-                    
-                    result.data = JSON(d)
-                    result.success = true
-                } else {
-                    print("Vui lòng bật định vị sss")
-                    result.success = false
-                    result.data = ""
-                    result.error = "Vui lòng bật định vị"
-                }
-                self.App21Result(result: result);
+    @objc func GET_LOCATION(result: Result) -> Void
+    {
+        caller.locationCallback = {(loc: CLLocationCoordinate2D?, status: CLAuthorizationStatus? ) in
+            if(loc != nil)
+            {
+                let d: [String: Double] = [
+                    "latitude": loc!.latitude,
+                    "longitude": loc!.longitude
+                ]
+                
+                result.data = JSON(d)
+                result.success = true
+            } else {
+                print("Vui lòng bật định vị sss")
+                result.success = false
+                result.data = ""
+                result.error = "Vui lòng bật định vị"
             }
-            caller.requestLoction()
+            self.App21Result(result: result);
         }
-
+        caller.requestLoction()
+    }
+    
     //MARK: - OPEN_QRCODE
     @objc func OPEN_QRCODE(result: Result) -> Void
     {
@@ -847,7 +865,7 @@ class App21 : NSObject, CLLocationManagerDelegate
         result.data = JSON(text);
         
         App21Result(result: result);
-       
+        
     }
     
     //MARK: - GET_INFO
@@ -865,7 +883,7 @@ class App21 : NSObject, CLLocationManagerDelegate
         result.data = JSON(info);
         
         App21Result(result: result);
-       
+        
     }
     
     static func OS_INFO() -> String {
@@ -912,7 +930,7 @@ class App21 : NSObject, CLLocationManagerDelegate
     @objc func KEY(result: Result) -> Void
     {
         let data = (result.params?.data(using: .utf8))
-
+        
         if data != nil {
             if let json = try? JSON(data: data!){
                 let key = json["key"].stringValue
@@ -926,18 +944,18 @@ class App21 : NSObject, CLLocationManagerDelegate
                     if v != nil {
                         result.data = JSON(v!)
                     }
-
+                    
                     result.success = true
                 }
             }
         }
-
-
-
+        
+        
+        
         //let jo = try? JSONSerialization.jsonObject(with: data, options: [])
-
+        
         App21Result(result: result);
-
+        
     }
     
 }
@@ -970,9 +988,9 @@ extension Result: Encodable {
         try container.encode(error, forKey: .error)
         if(data != nil)
         {
-           
-           try container.encode(data, forKey: .data)
-           
+            
+            try container.encode(data, forKey: .data)
+            
         }
         try container.encode(sub_cmd, forKey: .sub_cmd)
         try container.encode(params, forKey: .params)
@@ -982,16 +1000,16 @@ extension Result: Encodable {
 
 
 extension String {
-//: ### Base64 encoding a string
+    //: ### Base64 encoding a string
     func base64Encoded() -> String? {
-    
+        
         if let data = self.data(using: .utf8) {
             return data.base64EncodedString()
         }
         return nil
     }
-
-//: ### Base64 decoding a string
+    
+    //: ### Base64 decoding a string
     func base64Decoded() -> String? {
         if let data = Data(base64Encoded: self) {
             return String(data: data, encoding: .utf8)
@@ -1000,7 +1018,7 @@ extension String {
     }
 }
 enum Error21 : Error {
-   case runtimeError(String)
+    case runtimeError(String)
 }
 
 class Base64Require : Codable{
