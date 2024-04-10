@@ -87,6 +87,41 @@ class DataCacheManager {
         }
         return list
     }
+    func getBase64FileFromUnZipedFolder(images : [String]) -> [String?]{
+        var list = [String?]()
+        guard let documentsURL = getDocumentUrl() else {
+            return list
+        }
+        
+        for img in images {
+            if checkExist(fileName: img) {
+                let base64 = base64FromImagePath(fromImagePath: "file://\(documentsURL.appendingPathComponent(img).path)")
+                list.append(base64)
+            }else{
+                list.append(nil)
+            }
+        }
+        return list
+    }
+    
+    
+    private  func base64FromImagePath(fromImagePath imagePath: String) -> String? {
+        guard let imageURL = URL(string: imagePath) else {
+            print("Đường dẫn ảnh không hợp lệ")
+            return nil
+        }
+        
+        do {
+            let imageData = try Data(contentsOf: imageURL)
+        
+            let base64String = imageData.base64EncodedString()
+            return base64String
+        } catch {
+            print("Lỗi khi đọc dữ liệu của ảnh: \(error)")
+            return nil
+        }
+    }
+    
     
     func unZipFileFromAsset(fileName : String, success: @escaping (_ s : String?) ->Void, error: @escaping (_ url: String?) ->Void ){
         guard let zipURL = getURLFromBundle(path: fileName) else {

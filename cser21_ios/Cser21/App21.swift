@@ -117,11 +117,19 @@ class App21 : NSObject, CLLocationManagerDelegate
     @objc func GET_FILES_LOCAL(result: Result) -> Void {
         // params sẽ là 1 mảng các tên file ở local nhé a
         print(result.params)
+        var isBase64 = true;
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
                     let dataCacheManager = DataCacheManager()
-                    let list = dataCacheManager.getFileFromUnZipedFolder(images: images)
+                    var list = [String?]()
+                    if isBase64 {
+                        list = dataCacheManager.getBase64FileFromUnZipedFolder(images: images)
+                    }
+                    else {
+                        list = dataCacheManager.getFileFromUnZipedFolder(images: images)
+                    }
+                    
                     result.success = true;
                     result.data = JSON(list);
                     App21Result(result: result);
