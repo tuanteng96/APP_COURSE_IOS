@@ -527,7 +527,7 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
         wv.scrollView.showsHorizontalScrollIndicator = false;
         wv.scrollView.showsVerticalScrollIndicator = false;
         
-//        let link = URL(string:"http://192.168.1.140:5173/")!
+//        let link = URL(string:"http://192.168.1.139:5173/")!
 //        let request = URLRequest(url: link)
 //        wv.loadFileURL(path, allowingReadAccessTo: documentsURL)
 //        wv.load(request);

@@ -156,6 +156,7 @@ class App21 : NSObject, CLLocationManagerDelegate
                     var list = [String?]()
                     if isBase64 {
                         list = dataCacheManager.getBase64FromUrlBundle(images: images)
+                        print(list)
                     }
                     else {
                         list = dataCacheManager.getFilesFromUrlBundle(images: images)
