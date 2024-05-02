@@ -37,6 +37,15 @@ class DataCacheManager {
         }
     }
     
+    private func getFilePathFromBundle(path: String) -> String?{
+        let separatedArray = path.split(separator: ".")
+        if let filePath = Bundle.main.path(forResource: String(separatedArray.first ?? ""), ofType:  String(separatedArray.last ?? "")) {
+                return filePath
+               } else {
+                   return nil
+               }
+    }
+    
     func readDataJSONFromUnZippedFolder(paths: [String]) -> [String?]{
         var list = [String?]()
         guard let documentsURL = getDocumentUrl() else {
@@ -72,6 +81,29 @@ class DataCacheManager {
         }
     }
     
+    func getFilesFromUrlBundle(images : [String]) -> [String?]{
+        var list = [String?]()
+        for img in images {
+            let l =  getFilePathFromBundle(path: img)
+            list.append(l ?? "")
+        }
+        return list
+    }
+    
+    func getBase64FromUrlBundle(images : [String]) -> [String?]{
+        var list = [String?]()
+        for img in images {
+            guard let l =  getFilePathFromBundle(path: img) else {
+                continue
+            }
+            let base64 = base64FromImagePath(fromImagePath: l)
+            list.append(base64)     
+        }
+        return list
+    }
+
+
+    
     func getFileFromUnZipedFolder(images : [String]) -> [String?]{
         var list = [String?]()
         guard let documentsURL = getDocumentUrl() else {
@@ -87,6 +119,7 @@ class DataCacheManager {
         }
         return list
     }
+    
     func getBase64FileFromUnZipedFolder(images : [String]) -> [String?]{
         var list = [String?]()
         guard let documentsURL = getDocumentUrl() else {

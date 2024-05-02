@@ -767,15 +767,6 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
     }
     
     
-    func getFileFromBundle(path: String) -> String?{
-        let separatedArray = path.split(separator: ".")
-        if let cssFilePath = Bundle.main.path(forResource: String(separatedArray.first ?? ""), ofType:  String(separatedArray.last ?? "")) {
-                return cssFilePath
-               } else {
-                   return nil
-               }
-    }
-    
     
     
 }

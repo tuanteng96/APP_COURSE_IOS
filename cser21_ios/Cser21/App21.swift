@@ -147,14 +147,18 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - GET FILES PATH
     @objc func GET_FILES_PATH(result: Result) -> Void {
         result.success = true;
+        var isBase64 = true;
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
                     print(images)
-                    var list = [String]()
-                    for img in images {
-                        let l =  self.caller.getFileFromBundle(path: img)
-                        list.append(l ?? "")
+                    let dataCacheManager = DataCacheManager()
+                    var list = [String?]()
+                    if isBase64 {
+                        list = dataCacheManager.getBase64FromUrlBundle(images: images)
+                    }
+                    else {
+                        list = dataCacheManager.getFilesFromUrlBundle(images: images)
                     }
                     result.data = JSON(list);
                     App21Result(result: result);
