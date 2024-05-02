@@ -40,7 +40,7 @@ class DataCacheManager {
     private func getFilePathFromBundle(path: String) -> String?{
         let separatedArray = path.split(separator: ".")
         if let filePath = Bundle.main.path(forResource: String(separatedArray.first ?? ""), ofType:  String(separatedArray.last ?? "")) {
-                return filePath
+                return "file://\(filePath)"
                } else {
                    return nil
                }
