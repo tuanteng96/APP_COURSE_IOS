@@ -116,8 +116,8 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - GET FILES LOCAL
     @objc func GET_FILES_LOCAL(result: Result) -> Void {
         // params sẽ là 1 mảng các tên file ở local nhé a
-        print(result.params)
-        var isBase64 = true;
+        
+        var isBase64 = false;
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
@@ -147,20 +147,20 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - GET FILES PATH
     @objc func GET_FILES_PATH(result: Result) -> Void {
         result.success = true;
-        var isBase64 = true;
+        var isBase64 = false;
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
-                    print(images)
+                    
                     let dataCacheManager = DataCacheManager()
                     var list = [String?]()
                     if isBase64 {
                         list = dataCacheManager.getBase64FromUrlBundle(images: images)
-                        print(list)
                     }
                     else {
                         list = dataCacheManager.getFilesFromUrlBundle(images: images)
                     }
+                    
                     result.data = JSON(list);
                     App21Result(result: result);
                     
@@ -174,11 +174,11 @@ class App21 : NSObject, CLLocationManagerDelegate
     
     //MARK: - DOWNLOAD ZIP SERVER LOCAL
     @objc func DOWNLOAD_ZIP_SERVER(result: Result) -> Void {
-        print(result.params)
+        
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
-                    print(images)
+                    
                     let dataCacheManager = DataCacheManager()
                     dataCacheManager.downLoadAndUnzipFile(files: images) { url in
                         result.success = false;
@@ -206,7 +206,7 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - GET JSON LOCAL
     @objc func GET_JSON_LOCAL(result: Result) -> Void {
         result.success = true;
-        print(result.params)
+        
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let jsons = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
@@ -256,7 +256,7 @@ class App21 : NSObject, CLLocationManagerDelegate
         result.success = true;
         // params sẽ là 1 mảng các đường dẫn file cần lưu
         result.data = "";
-        print(result.params)
+        
         App21Result(result: result);
     }
     
@@ -316,7 +316,7 @@ class App21 : NSObject, CLLocationManagerDelegate
         if let jsonData = result.params?.data(using: .utf8) {
             do {
                 if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
-                    print(images)
+                    
                     DispatchQueue.main.asyncAfter(deadline:.now()) {
                         self.caller.saveImages(images: images, result: result)
                     }
@@ -533,7 +533,6 @@ class App21 : NSObject, CLLocationManagerDelegate
                 } else {
                     result.success = true
                     result.data = JSON(wifiInfo)
-                    print("RESULT WIFI: \(String(describing: result.data))")
                 }
                 self.App21Result(result: result);
                 
