@@ -116,11 +116,11 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - GET FILES LOCAL
     @objc func GET_FILES_LOCAL(result: Result) -> Void {
         // params sẽ là 1 mảng các tên file ở local nhé a
-        
-        var isBase64 = false;
         if let jsonData = result.params?.data(using: .utf8) {
             do {
-                if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
+                if let jData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? Dictionary<String,Any> {
+                    let images = jData["items"] as! [String]
+                    let isBase64 = jData["isBase64"] as! Bool
                     let dataCacheManager = DataCacheManager()
                     var list = [String?]()
                     if isBase64 {
@@ -147,11 +147,11 @@ class App21 : NSObject, CLLocationManagerDelegate
     //MARK: - GET FILES PATH
     @objc func GET_FILES_PATH(result: Result) -> Void {
         result.success = true;
-        var isBase64 = false;
         if let jsonData = result.params?.data(using: .utf8) {
             do {
-                if let images = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String] {
-                    
+                if let jData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? Dictionary<String,Any> {
+                    let images = jData["items"] as! [String]
+                    let isBase64 = jData["isBase64"] as! Bool
                     let dataCacheManager = DataCacheManager()
                     var list = [String?]()
                     if isBase64 {
