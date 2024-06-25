@@ -521,24 +521,24 @@ class ViewController: UIViewController,WKScriptMessageHandler,UIGestureRecognize
         // Do any additional setup after loading the view, typically from a nib.
         
         //DEV OPEN
-//        wv.isUserInteractionEnabled = true;
-//        wv.scrollView.isScrollEnabled = false;
-//        wv.scrollView.bounces = false;
-//        wv.scrollView.showsHorizontalScrollIndicator = false;
-//        wv.scrollView.showsVerticalScrollIndicator = false;
-//
-//        let link = URL(string:"http://192.168.1.139:5173/")!
-//        let request = URLRequest(url: link)
-//        wv.loadFileURL(path, allowingReadAccessTo: documentsURL)
-//        wv.load(request);
-//        view.addSubview(wv);
+        wv.isUserInteractionEnabled = true;
+        wv.scrollView.isScrollEnabled = false;
+        wv.scrollView.bounces = false;
+        wv.scrollView.showsHorizontalScrollIndicator = false;
+        wv.scrollView.showsVerticalScrollIndicator = false;
+
+        let link = URL(string:"http://192.168.1.134:5173/")!
+        let request = URLRequest(url: link)
+        wv.loadFileURL(path, allowingReadAccessTo: documentsURL)
+        wv.load(request);
+        view.addSubview(wv);
         // DEV OPEN
         
         // load embed.html
         // DEV HIDDEN
-        wv.isHidden = false;
-        wv.loadFileURL(path, allowingReadAccessTo: documentsURL)
-        wv.alpha = 1
+//        wv.isHidden = false;
+//        wv.loadFileURL(path, allowingReadAccessTo: documentsURL)
+//        wv.alpha = 1
         // DEV HIDDEN
                 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification , object:nil)
